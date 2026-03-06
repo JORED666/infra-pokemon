@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+
+  backend:
+    build: ../Backend-pokemon
+    container_name: backend-pokemon
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - POKE_API_URL=https://pokeapi.co/api/v2
+      - ALLOWED_ORIGIN=http://localhost:3000
+    networks:
+      - pokemon-net
+    restart: unless-stopped
+
+  frontend:
+    build: ../frontend-pokemon
+    container_name: frontend-pokemon
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:3001/api
+    depends_on:
+      - backend
+    networks:
+      - pokemon-net
+    restart: unless-stopped
+
+networks:
+  pokemon-net:
+    driver: bridge
